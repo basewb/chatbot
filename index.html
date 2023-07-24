@@ -1,16 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>EDGE-AI</title>
+  <title>ChatGPT Integration</title>
+  <script>
+    // Function to send a message to ChatGPT and receive a response
+    async function sendMessage() {
+      const input = document.getElementById("user-input").value;
+      if (input.trim() === "") return;
+
+      // Replace 'YOUR_OPENAI_API_KEY' with your actual API key
+      const apiKey = "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";
+      const endpoint = "https://api.openai.com/v1/engines/davinci-codex/completions";
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      };
+
+      const data = JSON.stringify({
+        prompt: input,
+        max_tokens: 100,
+      });
+
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: headers,
+          body: data,
+        });
+
+        const result = await response.json();
+        const chatResponse = result.choices[0].text.trim();
+
+        appendMessage("ChatGPT", chatResponse);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+
+    // Function to append a message to the chat box
+    function appendMessage(sender, message) {
+      const chatBox = document.getElementById("chat-box");
+      const newMessage = document.createElement("div");
+      newMessage.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      chatBox.appendChild(newMessage);
+
+      // Clear user input after sending
+      document.getElementById("user-input").value = "";
+    }
+  </script>
 </head>
 <body>
-<pre>
-<script src="https://bard.googleapis.com/bard.js"></script>
-<script>
-var bard = new Bard();
-var text = bard.generateText("What is Bard?");
-document.getElementById("text").innerHTML = text;
-</script>
-</pre>
+  <h1>ChatGPT Integration</h1>
+  <div id="chat-box"></div>
+  <div>
+    <input type="text" id="user-input" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
 </body>
 </html>
